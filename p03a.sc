@@ -14,6 +14,5 @@ def wirePoints(s: String) = {
 
 val wire1 = wirePoints(StdIn.readLine())
 val wire2 = wirePoints(StdIn.readLine())
-(wire1 intersect wire2).toList
 println((wire1 intersect wire2).map(_.distanceToOrigin).filter(_ > 0).min)
 
