@@ -15,7 +15,7 @@ for (let ip = 0; !visited.has(ip); ip++) {
 	switch (instr) {
 		case 'jmp': ip += argN - 1; break;
 		case 'acc': acc += argN; break;
-		case 'noop': break;
+		case 'nop': break;
 	}
 }
 

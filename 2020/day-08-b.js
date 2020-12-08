@@ -20,7 +20,7 @@ function run(program) {
 		switch (instr) {
 			case 'jmp': ip += argN - 1; break;
 			case 'acc': acc += argN; break;
-			case 'noop': break;
+			case 'nop': break;
 		}
 	}
 
@@ -34,8 +34,8 @@ for (let i = 0; i < originalProgram.length; i++) {
 
 	const originalInstr = originalProgram[i].instr;
 	switch (originalInstr) {
-		case 'noop': originalProgram[i].instr = 'jmp'; break;
-		case 'jmp': originalProgram[i].instr = 'noop'; break;
+		case 'nop': originalProgram[i].instr = 'jmp'; break;
+		case 'jmp': originalProgram[i].instr = 'nop'; break;
 	}
 
 	result = run(originalProgram);
