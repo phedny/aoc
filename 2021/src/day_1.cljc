@@ -1,8 +1,7 @@
-(ns day-1
-  (:require [clojure.string :as str]))
+(ns day-1 (:require util))
 
 (def input
-  (map #(Integer/parseInt %) (str/split (slurp "../inputs/1/real.txt") #"\n")))
+  (util/read-input #(Integer/parseInt %)))
 
 (defn sliding-sums
   [n xs]
