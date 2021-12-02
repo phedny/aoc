@@ -1,5 +1,4 @@
 (ns day-2 (:require util))
-;(def filename "example")
 
 (def input
   (util/read-input
@@ -12,10 +11,12 @@
     (fn
       [position [direction distance]]
       (case direction
-        "forward" (update-in position [:x] #(+ % distance))
-        "down" (update-in position [:y] #(+ % distance))
-        "up" (update-in position [:y] #(- % distance))))
-    {:x 0 :y 0}
+        "forward" (-> position
+                    (update-in [:x] + distance)
+                    (update-in [:y] + (* (position :aim) distance)))
+        "down" (update-in position [:aim] #(+ % distance))
+        "up" (update-in position [:aim] #(- % distance))))
+    {:x 0 :y 0 :aim 0}
     input))
 
 (println (* (answer :x) (answer :y)))
