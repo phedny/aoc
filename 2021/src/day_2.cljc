@@ -1,10 +1,7 @@
 (ns day-2 (:require util))
 
 (def input
-  (util/read-input
-    (fn
-      [line]
-      (update-in (clojure.string/split line #" ") [1] #(Integer/parseInt %)))))
+  (util/read-input identity #(Integer/parseInt %)))
 
 ; Instruction implementation for part a
 (defn forward-a

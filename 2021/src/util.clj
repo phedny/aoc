@@ -1,4 +1,4 @@
-(ns util)
+(ns util (:require [clojure.string :as str]))
 
 (defn input-basename
   []
@@ -8,8 +8,13 @@
 
 (defn input-filename
   []
-  (str "../inputs/" (clojure.string/replace (ns-name *ns*) #"day-" "") "/" (input-basename) ".txt"))
+  (str "../inputs/" (str/replace (ns-name *ns*) #"day-" "") "/" (input-basename) ".txt"))
+
+(defn apply-fns
+  [fs xs]
+  (map #(%1 %2) fs xs))
 
 (defn read-input
-  ([] (clojure.string/split (slurp (input-filename)) #"\n"))
-  ([f] (map f (read-input))))
+  ([] (str/split (slurp (input-filename)) #"\n"))
+  ([f] (map f (read-input)))
+  ([f & fs] (read-input #(apply-fns (apply vector f fs) (str/split % #" ")))))
