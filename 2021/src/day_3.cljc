@@ -1,7 +1,10 @@
 (ns day-3 (:require util))
 
+(def chars->ints
+  (partial map #(Character/digit % 10)))
+
 (def input
-  (util/read-input seq))
+  (util/read-input (comp chars->ints seq)))
 
 (defn transpose
   [xs]
@@ -10,48 +13,44 @@
 (defn count-bit-values
   [values]
   (reduce
-    (fn
-      [counts value]
-      (update-in counts [(Character/digit value 10)] inc))
+    #(update-in %1 [%2] inc)
     [0 0]
     values))
 
-(defn most-common-bit
-  [[number-of-zeroes number-of-ones]]
-  (if (> number-of-zeroes number-of-ones) \0 \1))
+(defn compare-bits
+  [more-zeroes more-ones bit-string]
+  (if (apply > (count-bit-values bit-string)) more-zeroes more-ones))
 
-(defn least-common-bit
-  [[number-of-zeroes number-of-ones]]
-  (if (> number-of-zeroes number-of-ones) \1 \0))
+(def most-common-bit
+  (partial compare-bits 0 1))
+
+(def least-common-bit
+  (partial compare-bits 1 0))
+
+(defn parse-binary
+  [bits]
+  (Integer/parseInt (apply str bits) 2))
+
+(defn compute-answer
+  [fn bit-strings]
+  (* (fn most-common-bit bit-strings) (fn least-common-bit bit-strings)))
 
 ; Part a
-(def gamma-rate
-  (apply str (map (comp most-common-bit count-bit-values) (transpose input))))
+(defn merge-bit-strings
+  [fn bit-strings]
+  (parse-binary (map fn (transpose bit-strings))))
 
-(def epsilon-rate
-  (apply str (map (comp least-common-bit count-bit-values) (transpose input))))
-
-(def answer-a
-  (* (Integer/parseInt gamma-rate 2) (Integer/parseInt epsilon-rate 2)))
-
-(println answer-a)
+(println (compute-answer merge-bit-strings input))
 
 ; Part b
 
 (defn apply-bit-criteria
-  [fn values bit]
-  (if (= (count values) 1)
-    (first values)
-    (let [v (->> values transpose (map (comp fn count-bit-values)))]
-      (recur fn (filter #(= (nth % bit) (nth v bit)) values) (inc bit)))))
+  ([fn values]
+   (parse-binary (apply-bit-criteria fn values 0)))
+  ([fn values bit]
+   (if (= (count values) 1)
+     (first values)
+     (let [v (->> values transpose (map fn))]
+       (recur fn (filter #(= (nth % bit) (nth v bit)) values) (inc bit))))))
 
-(def oxygen-generator-rating
-  (apply str (apply-bit-criteria most-common-bit input 0)))
-
-(def CO2-scrubber-rating
-  (apply str (apply-bit-criteria least-common-bit input 0)))
-
-(def answer-b
-  (* (Integer/parseInt oxygen-generator-rating 2) (Integer/parseInt CO2-scrubber-rating 2)))
-
-(println answer-b)
+(println (compute-answer apply-bit-criteria input))
