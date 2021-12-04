@@ -40,23 +40,23 @@
 
 (defn compute-answer
   [board drawn-numbers]
-  (let [sum-of-unmarked-answers (apply + (set/difference (set (flatten board)) (set drawn-numbers)))]
-    (* sum-of-unmarked-answers (last drawn-numbers))))
+  (let [sum-of-unmarked-numbers (apply + (set/difference (set (flatten board)) (set drawn-numbers)))]
+    (* sum-of-unmarked-numbers (last drawn-numbers))))
 
 ; Part a
-(def shortest-seq-of-prefixes-with-winning-board
+(def prefix-with-winning-board
   (first (drop-while #(empty? (winning-boards % bingo-boards)) drawn-number-prefixes)))
 
 (def winning-board
-  (first (winning-boards shortest-seq-of-prefixes-with-winning-board bingo-boards)))
+  (first (winning-boards prefix-with-winning-board bingo-boards)))
 
-(println (compute-answer winning-board shortest-seq-of-prefixes-with-winning-board))
+(println (compute-answer winning-board prefix-with-winning-board))
 
 ; Part b
-(def shortest-seq-of-prefixes-with-only-winning-boards
-  (first (drop-while #(< (count (winning-boards % bingo-boards)) (count bingo-boards)) drawn-number-prefixes)))
+(def prefix-without-losing-boards
+  (first (drop-while #(not-empty (losing-boards % bingo-boards)) drawn-number-prefixes)))
 
 (def losing-board
- (first (losing-boards (drop-last shortest-seq-of-prefixes-with-only-winning-boards) bingo-boards)))
+ (first (losing-boards (drop-last prefix-without-losing-boards) bingo-boards)))
 
-(println (compute-answer losing-board shortest-seq-of-prefixes-with-only-winning-boards))
+(println (compute-answer losing-board prefix-without-losing-boards))
