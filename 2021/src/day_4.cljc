@@ -30,20 +30,33 @@
 (def drawn-number-prefixes
   (map #(take % drawn-numbers) (rest (range))))
 
-(defn pick-winning-board
+(defn winning-boards
   [numbers boards]
-  (some (partial winning-board? numbers) boards))
+  (filter (partial winning-board? numbers) boards))
 
+(defn losing-boards
+  [numbers boards]
+  (filter (complement (partial winning-board? numbers)) boards))
+
+(defn compute-answer
+  [board drawn-numbers]
+  (let [sum-of-unmarked-answers (apply + (set/difference (set (flatten board)) (set drawn-numbers)))]
+    (* sum-of-unmarked-answers (last drawn-numbers))))
+
+; Part a
 (def shortest-seq-of-prefixes-with-winning-board
-  (first (drop-while (complement #(pick-winning-board % bingo-boards)) drawn-number-prefixes)))
+  (first (drop-while #(empty? (winning-boards % bingo-boards)) drawn-number-prefixes)))
 
 (def winning-board
-  (first (filter #(winning-board? shortest-seq-of-prefixes-with-winning-board %) bingo-boards)))
+  (first (winning-boards shortest-seq-of-prefixes-with-winning-board bingo-boards)))
 
-(def unmarked-numbers
-  (set/difference (set (flatten winning-board)) (set shortest-seq-of-prefixes-with-winning-board)))
+(println (compute-answer winning-board shortest-seq-of-prefixes-with-winning-board))
 
-(def result
-  (* (apply + unmarked-numbers) (last shortest-seq-of-prefixes-with-winning-board)))
+; Part b
+(def shortest-seq-of-prefixes-with-only-winning-boards
+  (first (drop-while #(< (count (winning-boards % bingo-boards)) (count bingo-boards)) drawn-number-prefixes)))
 
-(println result)
+(def losing-board
+ (first (losing-boards (drop-last shortest-seq-of-prefixes-with-only-winning-boards) bingo-boards)))
+
+(println (compute-answer losing-board shortest-seq-of-prefixes-with-only-winning-boards))
