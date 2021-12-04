@@ -12,7 +12,7 @@
   (as-> line $ (str/trim $) (str/split $ #" +") (map #(Integer/parseInt %) $)))
 
 (def bingo-boards
-  (as-> input $ (rest $) (partition 6 $) (map #(map parse-bingo-line (rest %)) $)))
+  (->> input rest (partition 6) (map #(map parse-bingo-line (rest %)))))
 
 ; Play the game
 (defn transpose
