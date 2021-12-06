@@ -15,4 +15,5 @@
   ([c spawned-fish]
    (lazy-seq (cons c (fish-count (+ c (first spawned-fish)) (rest spawned-fish))))))
 
+(println (nth (fish-count) 80))
 (println (nth (fish-count) 256))
