@@ -1,19 +1,23 @@
 (ns day-6 (:require util))
 
 (def input
-  (->> (util/read-input #(clojure.string/split % #",")) first (map #(Integer/parseInt %))))
+  (->> (util/read-input #(clojure.string/split % #",")) first (map #(Long/parseLong %))))
 
-(defn spawn-fish-count
-  ([]
-   (spawn-fish-count (map (fn [n] (count (filter #(= % n) input))) (range 7 -2 -1))))
-  ([just-before]
-   (lazy-seq (cons (nth just-before 7) (spawn-fish-count (cons (+ (nth just-before 6) (nth just-before 8)) just-before))))))
+(def initial-fish-timers
+  (map (fn [timer] (count (filter #(= % timer) input))) (range 0 9)))
 
-(defn fish-count
-  ([]
-   (fish-count (count input) (spawn-fish-count)))
-  ([c spawned-fish]
-   (lazy-seq (cons c (fish-count (+ c (first spawned-fish)) (rest spawned-fish))))))
+(defn update-timers
+  [timers]
+  (let [spawn-count (first timers)
+        rotated-timers (apply vector (concat (rest timers) [spawn-count]))]
+    (update-in rotated-timers [6] + spawn-count)))
 
-(println (nth (fish-count) 80))
-(println (nth (fish-count) 256))
+(defn fish-count*
+  [timers]
+  (lazy-seq (cons (apply + timers) (fish-count* (update-timers timers)))))
+
+(def fish-count
+  (fish-count* initial-fish-timers))
+
+(println (nth fish-count 80))
+(println (nth fish-count 256))
