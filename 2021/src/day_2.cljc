@@ -1,7 +1,7 @@
 (ns day-2 (:require util))
 
 (def input
-  (util/read-input identity #(Integer/parseInt %)))
+  (util/read-input #"\n" #" " identity #(Integer/parseInt %)))
 
 ; Instruction implementation for part a
 (defn forward-a

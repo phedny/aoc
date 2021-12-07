@@ -1,7 +1,7 @@
 (ns day-7 (:require util))
 
 (def input
-  (first (util/read-input (fn [line] (map #(Integer/parseInt %) (clojure.string/split line #","))))))
+  (util/read-input #"," #(Integer/parseInt %)))
 
 (defn cost-of
   [cost-fn positions target]

@@ -5,7 +5,7 @@
   (apply vector (map #(Integer/parseInt %) (str/split s #","))))
 
 (def input
-  (util/read-input str->coord identity str->coord))
+  (util/read-input #"\n" #" " str->coord identity str->coord))
 
 (defn auto-range
   [start end]

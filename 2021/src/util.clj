@@ -15,6 +15,9 @@
   (map #(%1 %2) fs xs))
 
 (defn read-input
-  ([] (str/split (slurp (input-filename)) #"\n"))
-  ([f] (map f (read-input)))
-  ([f & fs] (read-input #(apply-fns (apply vector f fs) (str/split % #" ")))))
+  ([] (read-input #"\n" identity))
+  ([fn-or-re] (cond
+                (fn? fn-or-re) (read-input #"\n" fn-or-re)
+                (instance? java.util.regex.Pattern fn-or-re) (read-input fn-or-re identity)))
+  ([line-re f] (map f (str/split (slurp (input-filename)) line-re)))
+  ([line-re column-re f & fs] (read-input line-re #(apply-fns (apply vector f fs) (str/split % column-re)))))

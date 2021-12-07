@@ -1,7 +1,7 @@
 (ns day-6 (:require util))
 
 (def input
-  (->> (util/read-input #(clojure.string/split % #",")) first (map #(Long/parseLong %))))
+  (util/read-input #"," #(Long/parseLong %)))
 
 (def initial-fish-timers
   (map (fn [timer] (count (filter #(= % timer) input))) (range 0 9)))
