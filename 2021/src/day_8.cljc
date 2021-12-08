@@ -3,20 +3,6 @@
 (def input
   (apply util/read-input #"\n" #" " (repeat 15 (comp set seq))))
 
-; Part a
-(def inputs-by-led-count
-  (->> input (mapcat identity) (group-by count)))
-
-(defn count-digits-with-led-count
-  [led-count]
-  (- (count (inputs-by-led-count led-count)) (count input)))
-
-(def result-part-a
-  (apply + (map count-digits-with-led-count [2 3 4 7])))
-
-(println result-part-a)
-
-; Part b
 (defn differentiate-2-3-5
   [candidates digit-1 digit-4]
   (let [the-2 (first (filter #(= 2 (count (set/intersection % digit-4))) candidates))
@@ -41,12 +27,18 @@
         the-0-6-9 (differentiate-0-6-9 (grouped-by-count 6) (the-2-3-5 3) (the-2-3-5 5))]
     (clojure.set/map-invert (merge trivial the-2-3-5 the-0-6-9))))
 
+; Part a
+(defn count-trivial
+  [line]
+  (let [digits->number (map-digits (take 10 line))]
+    (count (filter #(contains? #{1 4 7 8} %) (map digits->number (drop 11 line))))))
+
+(println (apply + (map count-trivial input)))
+
+; Part b
 (defn line->number
   [line]
   (let [digits->number (map-digits (take 10 line))]
     (Integer/parseInt (apply str (map digits->number (drop 11 line))))))
 
-(def result-part-b
-  (apply + (map line->number input)))
-
-(println result-part-b)
+(println (apply + (map line->number input)))
