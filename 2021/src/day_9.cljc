@@ -3,12 +3,6 @@
 (def input
   (apply vector (util/read-input (comp (partial apply vector) (partial map #(Character/digit % 10)) seq))))
 
-(def height
-  (count input))
-
-(def width
-  (count (first input)))
-
 (defn neighbors
   [row col]
   (filter (complement #(nil? (get-in input %))) [[(dec row) col] [(inc row) col] [row (dec col)] [row (inc col)]]))
@@ -19,8 +13,8 @@
     (every? #(< val %) (map (partial get-in input) (neighbors row col)))))
 
 (def low-points
-  (for [row (range 0 height)
-        col (range 0 width)
+  (for [row (range 0 (count input))
+        col (range 0 (count (first input)))
         :when (low-point? row col)]
     [row col]))
 
@@ -49,14 +43,11 @@
     (list)
     (->> basin extend-basin find-basin* (cons area) lazy-seq)))
 
-(defn find-basin
-  [basin]
-  (last (find-basin* basin)))
-
-(def basin-sizes
-  (map (comp count find-basin (partial apply low-point->basin)) low-points))
+(defn find-basin-size
+  [row col]
+  (count (last (find-basin* (low-point->basin row col)))))
 
 (def result-part-b
-  (apply * (take 3 (sort > basin-sizes))))
+  (apply * (take 3 (sort > (map #(apply find-basin-size %) low-points)))))
 
 (println result-part-b)
