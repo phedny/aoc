@@ -18,9 +18,9 @@
         :when (fn (get-in grid [row col]))]
     [row col]))
 
-(defn inc-all
-  [grid]
-  (apply vector (map #(apply vector (map inc %)) grid)))
+(defn for-all
+  [fn grid]
+  (apply vector (map #(apply vector (map fn %)) grid)))
 
 (defn inc-around-flashes
   ([grid] (inc-around-flashes grid (set (coords-that #(> % 9) grid))))
@@ -36,11 +36,7 @@
   [n]
   (if (> n 9) 0 n))
 
-(defn unflash-all
-  [grid]
-  (apply vector (map #(apply vector (map unflash %)) grid)))
-
-(def step (comp unflash-all inc-around-flashes inc-all))
+(def step (comp (partial for-all unflash) inc-around-flashes (partial for-all inc)))
 
 (defn flash-count*
   [grid]
@@ -49,11 +45,6 @@
 
 (def flash-count
   (flash-count* input))
-
-(defn print-grid
-  [grid]
-  (doseq [line grid] (println (apply str line)))
-  (println ""))
 
 (def result-part-a
   (apply + (take 100 flash-count)))
