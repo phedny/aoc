@@ -1,4 +1,6 @@
-(ns day-11 (:require util [clojure.set :as set]))
+(ns day-11
+  (:require util
+   [clojure.set :as set]))
 
 (def input
   (apply vector (util/read-input (comp (partial apply vector) (partial map #(Character/digit % 10)) seq))))
@@ -23,14 +25,22 @@
   (apply vector (map #(apply vector (map fn %)) grid)))
 
 (defn inc-around-flashes
-  ([grid] (inc-around-flashes grid (set (coords-that #(> % 9) grid))))
-  ([grid flashes] (if (empty? flashes)
-                    grid
-                    (let [affected-cells (filter
-                                           #(< (get-in grid %) 10)
-                                           (mapcat #(apply neighbors %) flashes))
-                          new-grid (reduce #(update-in %1 %2 inc) grid affected-cells)]
-                      (recur new-grid (set/difference (set (coords-that #(> % 9) new-grid)) (set (coords-that #(> % 9) grid))))))))
+  ([grid]
+   (inc-around-flashes grid (set (coords-that #(> % 9) grid))))
+  ([grid flashes]
+   (if (empty? flashes)
+     grid
+     (let [affected-cells (filter
+                            #(< (get-in grid %) 10)
+                            (mapcat #(apply neighbors %) flashes))
+           new-grid (reduce
+                      #(update-in %1 %2 inc)
+                      grid
+                      affected-cells)
+           new-flashes (set/difference
+                         (set (coords-that #(> % 9) new-grid))
+                         (set (coords-that #(> % 9) grid)))]
+       (recur new-grid new-flashes)))))
 
 (defn unflash
   [n]
