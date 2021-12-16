@@ -8,7 +8,8 @@
 
 (defn input-filename
   []
-  (str "../inputs/" (str/replace (ns-name *ns*) #"day-" "") "/" (input-basename) ".txt"))
+  (let [day-number (get (re-find (re-matcher #"day-(\d+)" (name (ns-name *ns*)))) 1)]
+    (str "../inputs/" day-number "/" (input-basename) ".txt")))
 
 (defn apply-fns
   [fs xs]
