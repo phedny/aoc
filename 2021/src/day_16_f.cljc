@@ -23,7 +23,7 @@
    (let [[m & bits] (take-number 1 bits)
          [v & bits] (take-number 4 bits)
          result (+ (* acc 16) v)]
-     (if (= m 0)
+     (if (zero? m)
        (cons result bits)
        (recur result bits)))))
 
@@ -38,7 +38,7 @@
 
 (defn take-number-of-packets
   [n bits]
-  (if (= n 0)
+  (if (zero? n)
     (cons () bits)
     (let [[packet & bits] (take-packet bits)
           [sub-packets & bits] (take-number-of-packets (dec n) bits)]
@@ -69,17 +69,20 @@
 
 (println (-> input string->bit-stream take-packet first version-sum))
 
+(defn bool->int
+  [b]
+  (if b 1 0))
+
+(def gt (comp bool->int >))
+(def lt (comp bool->int <))
+(def eq (comp bool->int =))
+
 (defn packet->clojure
   [packet]
-  (case (packet :type-id)
-    0 (apply list '+ (map packet->clojure (packet :sub-packets)))
-    1 (apply list '* (map packet->clojure (packet :sub-packets)))
-    2 (apply list 'min (map packet->clojure (packet :sub-packets)))
-    3 (apply list 'max (map packet->clojure (packet :sub-packets)))
-    4 (packet :value)
-    5 (list 'if (apply list '> (map packet->clojure (packet :sub-packets))) 1 0)
-    6 (list 'if (apply list '< (map packet->clojure (packet :sub-packets))) 1 0)
-    7 (list 'if (apply list '= (map packet->clojure (packet :sub-packets))) 1 0)))
+  (if-let [literal (packet :value)]
+    literal
+    (cons
+      (get `[+ * min max () gt lt eq] (packet :type-id))
+      (map packet->clojure (packet :sub-packets)))))
 
-;(println (-> input string->bit-stream take-packet first packet->clojure))
 (println (-> input string->bit-stream take-packet first packet->clojure eval))
