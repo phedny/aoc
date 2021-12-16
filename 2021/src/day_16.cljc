@@ -57,24 +57,23 @@
      (cons (byte-buffer->packet bb) (byte-buffer->packets bb (dec n)))
      ())))
 
-(def string->packet
-  (comp byte-buffer->packet string->byte-buffer))
-
 (defn version-sum
   [{version :version sub-packets :sub-packets}]
   (apply + version (map version-sum (or sub-packets ()))))
 
-;(println (string->packet "D2FE28"))
-;(println (string->packet "38006F45291200"))
-;(println (string->packet "EE00D40C823060"))
-;(println (string->packet "8A004A801A8002F478"))
-;(println (version-sum (string->packet "8A004A801A8002F478")))
-;(println (string->packet "620080001611562C8802118E34"))
-;(println (version-sum (string->packet "620080001611562C8802118E34")))
-;(println (string->packet "C0015000016115A2E0802F182340"))
-;(println (version-sum (string->packet "C0015000016115A2E0802F182340")))
-;(println (string->packet "A0016C880162017C3686B18A3D4780"))
-;(println (version-sum (string->packet "A0016C880162017C3686B18A3D4780")))
+(println (-> input string->byte-buffer byte-buffer->packet version-sum))
 
-;(println (string->packet input))
-(println (version-sum (string->packet input)))
+(defn packet->clojure
+  [packet]
+  (case (packet :type-id)
+    0 (apply list '+ (map packet->clojure (packet :sub-packets)))
+    1 (apply list '* (map packet->clojure (packet :sub-packets)))
+    2 (apply list 'min (map packet->clojure (packet :sub-packets)))
+    3 (apply list 'max (map packet->clojure (packet :sub-packets)))
+    4 (packet :value)
+    5 (list 'if (apply list '> (map packet->clojure (packet :sub-packets))) 1 0)
+    6 (list 'if (apply list '< (map packet->clojure (packet :sub-packets))) 1 0)
+    7 (list 'if (apply list '= (map packet->clojure (packet :sub-packets))) 1 0)))
+
+;(println (-> input string->byte-buffer byte-buffer->packet packet->clojure))
+(println (-> input string->byte-buffer byte-buffer->packet packet->clojure eval))
