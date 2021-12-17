@@ -50,3 +50,9 @@
   (apply max (mapcat #(map second %) trajectories)))
 
 (println result-part-a)
+
+(def result-part-b
+  (count trajectories))
+
+(println result-part-b)
+
