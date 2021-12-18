@@ -71,3 +71,11 @@
   (sf-magnitude (reduce sf-plus input)))
 
 (println result-part-a)
+
+(def result-part-b
+  (apply max (for [a input
+                   b input
+                   :when (not= a b)]
+               (sf-magnitude (sf-plus a b)))))
+
+(println result-part-b)
