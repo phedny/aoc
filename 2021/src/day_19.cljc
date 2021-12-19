@@ -36,10 +36,6 @@
    (fn [[x y z]] [(unchecked-negate z) x (unchecked-negate y)]) (fn [[x y z]] [(unchecked-negate z) (unchecked-negate x) y])
    (fn [[x y z]] [(unchecked-negate z) y x]) (fn [[x y z]] [(unchecked-negate z) (unchecked-negate y) (unchecked-negate x)])])
 
-(defn create-rotated-scan-results
-  [coordinates]
-  (reduce #(assoc %1 %2 (map %2 coordinates)) {} rotation-functions))
-
 (defn coordinate-difference
   [c1 c2]
   (apply vector (map - c2 c1)))
@@ -48,31 +44,38 @@
   [c1 c2]
   (apply vector (map + c1 c2)))
 
-(defn process-scan-results
-  [rotation coordinates]
+(defn add-relatives-to-coordinates
+  [coordinates]
   (->> (for [c1 coordinates
              c2 coordinates
              :when (not= c1 c2)]
          {c1 [{:diff (coordinate-difference c1 c2) :to c2}]})
        (apply merge-with concat)
-       (map (fn [[coordinate relatives]] [coordinate (apply vector relatives) rotation]))))
+       (map (fn [[coordinate relatives]] [coordinate (apply vector relatives)]))))
+
+(def processed-scan-results
+  (map
+    (fn [coordinates] (reduce #(assoc %1 %2 (add-relatives-to-coordinates (map %2 coordinates))) {} rotation-functions))
+    input))
 
 (defn create-transformation-function
-  [block1 block2 compose-with]
+  [block1 processed-scan-result compose-with]
   (some (fn
-           [[coordinate1 relatives1]]
-           (let [diffs1 (set (map :diff relatives1))
-                 prr-s (mapcat
-                         #(apply process-scan-results %)
-                         (create-rotated-scan-results block2))]
-             (some (fn
-                     [[coordinate2 relatives2 rotation]]
-                     (let [diffs2 (set (map :diff relatives2))
-                           intersecting-diffs (intersection diffs1 diffs2)]
-                       (if (> (count intersecting-diffs) 10)
-                         (comp compose-with (partial coordinate-sum (coordinate-difference coordinate2 coordinate1)) rotation))))
-                   prr-s)))
-        (process-scan-results identity block1)))
+          [[coordinate1 relatives1]]
+          (let [diffs1 (set (map :diff relatives1))
+                crr-s (mapcat
+                        (fn
+                          [[rotation coordinates]]
+                          (map (fn [[coordinate relatives]] [coordinate relatives rotation]) coordinates))
+                        processed-scan-result)]
+            (some (fn
+                    [[coordinate2 relatives2 rotation]]
+                    (let [diffs2 (set (map :diff relatives2))
+                          intersecting-diffs (intersection diffs1 diffs2)]
+                      (if (> (count intersecting-diffs) 10)
+                        (comp compose-with (partial coordinate-sum (coordinate-difference coordinate2 coordinate1)) rotation))))
+                  crr-s)))
+        (add-relatives-to-coordinates block1)))
 
 (defn find-all-transformation-functions
   [transformation-functions]
@@ -86,7 +89,7 @@
                  (->> (map vector input transformation-functions)
                       (filter #(not (nil? (second %))))
                       (some #(create-transformation-function (first %) block (second %))))))
-             input transformation-functions))
+             processed-scan-results transformation-functions))
     transformation-functions))
 
 (def transformation-functions
