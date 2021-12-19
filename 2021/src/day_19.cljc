@@ -104,3 +104,16 @@
   (set (mapcat #(map %2 %1) input transformation-functions)))
 
 (println (count all-beacons))
+
+(def scanner-coordinates
+  (map #(% [0 0 0]) transformation-functions))
+
+(defn manhattan-distance
+  [c1 c2]
+  (apply + (map #(Math/abs (- %1 %2)) c1 c2)))
+
+(def scanner-distances (for [c1 scanner-coordinates
+                             c2 scanner-coordinates]
+                         (manhattan-distance c1 c2)))
+
+(println (apply max scanner-distances))
