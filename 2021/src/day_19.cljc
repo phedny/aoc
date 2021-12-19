@@ -78,22 +78,25 @@
         (add-relatives-to-coordinates block1)))
 
 (defn find-all-transformation-functions
-  [transformation-functions]
+  [transformation-functions searchable-blocks]
   (println (count (filter nil? transformation-functions)) "/" (count transformation-functions))
   (if (some nil? transformation-functions)
-    (recur (map
-             (fn
-               [block tf]
-               (or
-                 tf
-                 (->> (map vector input transformation-functions)
-                      (filter #(not (nil? (second %))))
-                      (some #(create-transformation-function (first %) block (second %))))))
-             processed-scan-results transformation-functions))
+    (let [new-tf-s (map
+                     (fn
+                       [block tf]
+                       (or
+                         tf
+                         (->> (map vector input transformation-functions searchable-blocks)
+                              (filter #(and (not (nil? (second %))) (get % 2)))
+                              (some #(create-transformation-function (first %) block (second %))))))
+                     processed-scan-results transformation-functions)]
+      (recur new-tf-s (map #(and (nil? %1) %2) transformation-functions searchable-blocks)))
     transformation-functions))
 
 (def transformation-functions
-  (find-all-transformation-functions (cons identity (map (constantly nil) (rest input)))))
+  (find-all-transformation-functions
+    (cons identity (map (constantly nil) (rest input)))
+    (map (constantly true) input)))
 
 (println ">>")
 
