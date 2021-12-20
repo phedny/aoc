@@ -28,13 +28,17 @@
   (map substitute row))
 
 (defn substitute-pattern
-  [[inf pattern]]
-  (let [partitioned-pattern (partition 3 1 (map (partial partition 3 1) (extend-pattern inf pattern)))
-        transposed (map #(apply map vector %) partitioned-pattern)
-        substituted-inf (get mapping (if (= 0 inf) 0 511))]
-    [substituted-inf (map substitute-row transposed)]))
+  [n [inf pattern]]
+  (if (zero? n)
+    [inf pattern]
+    (let [partitioned-pattern (partition 3 1 (map (partial partition 3 1) (extend-pattern inf pattern)))
+          transposed (map #(apply map vector %) partitioned-pattern)
+          substituted-inf (get mapping (if (= 0 inf) 0 511))]
+      (recur (dec n) [substituted-inf (map substitute-row transposed)]))))
 
-(def result-part-a
-  (->> initial-pattern substitute-pattern substitute-pattern flatten (filter #(= % 1)) count))
+(defn compute-result
+  [n]
+  (->> initial-pattern (substitute-pattern n) flatten (filter #(= % 1)) count))
 
-(println result-part-a)
+(println (compute-result 2))
+(println (compute-result 50))
