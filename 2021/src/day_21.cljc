@@ -27,8 +27,6 @@
 (def roll-distribution
   (frequencies (for [a (range 1 4) b (range 1 4) c (range 1 4)] (+ a b c))))
 
-(def play-step (memoize play-step))
-
 (defn finished?
   [[_ _ & scores]]
   (some #(> % 20) scores))
