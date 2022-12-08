@@ -4,34 +4,23 @@ fun main() {
     val grid = readInput().split("\n")
         .map { it.map(Char::digitToInt) }
 
-    grid
-        .mapCells { v, left, right, up, down ->
-            if (left.all { it < v } || right.all { it < v } || up.all { it < v } || down.all { it < v }) 1 else 0
-        }
-        .sumOf { it.sum() }
+    grid.mapCells(Boolean::or) { v, line -> line.all { it < v } }
+        .sumOf { it.count { b -> b } }
         .also(::println)
 
-    grid
-        .mapCells { v, left, right, up, down ->
-            left.visibleAt(v) * right.visibleAt(v) * up.visibleAt(v) * down.visibleAt(v)
-        }
+    grid.mapCells(Int::times) { v, line -> line.indexOfFirst { it >= v }.let { if (it == -1) line.size else it + 1 } }
         .maxOf { it.maxOrNull()!! }
         .also(::println)
 }
 
-fun <T, R> List<List<T>>.mapCells(transform: (value: T, left: List<T>, right: List<T>, up: List<T>, down: List<T>) -> R): List<List<R>> =
-    this.indices.map { row ->
-        this.first().indices.map { col ->
-            transform(
-                this[row][col],
-                this[row].subList(0, col).reversed(),
-                this[row].let { it.subList(col + 1, it.size) },
-                this.subList(0, row).map { it[col] }.reversed(),
-                this.subList(row + 1, this.size).map { it[col] }
-            )
+fun <T, R> List<List<T>>.mapCells(combine: (left: R, right: R) -> R, transform: (valueE: T, line: List<T>) -> R): List<List<R>> =
+    this.mapIndexed { rowIdx, row ->
+        row.mapIndexed { colIdx, value ->
+            listOf(
+                transform(value, row.take(colIdx).reversed()),
+                transform(value, row.drop(colIdx + 1)),
+                transform(value, this.take(rowIdx).map { it[colIdx] }.reversed()),
+                transform(value, this.drop(rowIdx + 1).map { it[colIdx] })
+            ).reduce(combine)
         }
     }
-
-fun List<Int>.visibleAt(height: Int): Int =
-    this.indexOfFirst { it >= height }
-        .let { if (it == -1) this.size else it + 1 }
