@@ -13,7 +13,7 @@ fun main() {
         .also(::println)
 }
 
-fun <T, R> List<List<T>>.mapCells(combine: (left: R, right: R) -> R, transform: (valueE: T, line: List<T>) -> R): List<List<R>> =
+fun <T, R> List<List<T>>.mapCells(combine: (R, R) -> R, transform: (T, List<T>) -> R): List<List<R>> =
     this.mapIndexed { rowIdx, row ->
         row.mapIndexed { colIdx, value ->
             listOf(
