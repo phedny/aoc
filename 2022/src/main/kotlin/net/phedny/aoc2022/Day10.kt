@@ -24,6 +24,6 @@ fun main() {
         .also(::println)
 
     signal.chunked(40)
-        .map { line -> line.mapIndexed { col, sprite -> if ((col - sprite).absoluteValue < 2) '#' else ' ' }.joinToString() }
+        .map { line -> line.mapIndexed { col, sprite -> if ((col - sprite).absoluteValue < 2) '#' else ' ' }.joinToString(" ") }
         .forEach(::println)
 }
