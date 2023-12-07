@@ -33,7 +33,7 @@ func ReadLines() []string {
 	if len(os.Args) > 1 {
 		file = os.Args[1]
 	}
-	bytes, err := os.ReadFile(fmt.Sprintf("inputs/%d/%s.txt", GetDay(), file))
+	bytes, err := os.ReadFile(fmt.Sprintf("day%d/%s.txt", GetDay(), file))
 	if err != nil {
 		panic(err)
 	}
