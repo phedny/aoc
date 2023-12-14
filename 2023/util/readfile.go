@@ -1,6 +1,7 @@
 package util
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"regexp"
@@ -28,7 +29,7 @@ func GetDay() int {
 	}
 }
 
-func ReadLines() []string {
+func ReadFile() []byte {
 	file := "real"
 	if len(os.Args) > 1 {
 		file = os.Args[1]
@@ -37,6 +38,13 @@ func ReadLines() []string {
 	if err != nil {
 		panic(err)
 	}
+	return bytes
+}
 
-	return strings.Split(string(bytes), "\n")
+func ReadLines() []string {
+	return strings.Split(string(ReadFile()), "\n")
+}
+
+func ReadByteMatrix() [][]byte {
+	return bytes.Split(ReadFile(), []byte{'\n'})
 }
