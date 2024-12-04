@@ -41,7 +41,7 @@ func ReadFile() []byte {
 	return bytes
 }
 
-func ReadLines() []string {
+func ReadLines() Lines {
 	return strings.Split(string(ReadFile()), "\n")
 }
 
