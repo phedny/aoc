@@ -45,6 +45,6 @@ func ReadLines() Lines {
 	return strings.Split(string(ReadFile()), "\n")
 }
 
-func ReadByteMatrix() [][]byte {
+func ReadByteMatrix() ByteMatrix {
 	return bytes.Split(ReadFile(), []byte{'\n'})
 }

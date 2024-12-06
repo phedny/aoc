@@ -30,10 +30,10 @@ func (g MappedGrid[T1, T2]) MustGet(r, c int, def T2) T2 {
 	return def
 }
 
-func (g MappedGrid[T1, T2]) AllCells(yield func(Cell[T2]) bool) {
+func (g MappedGrid[T1, T2]) AllCells(yield func(GridWalker[T2]) bool) {
 	for cell := range g.g.AllCells {
 		if _, ok := g.m(cell.Get()); ok {
-			if !yield(Cell[T2]{g, cell.Row(), cell.Column()}) {
+			if !yield(WalkGrid(g, cell.Position(), cell.Orientation())) {
 				return
 			}
 		}

@@ -7,7 +7,12 @@ import (
 
 type Grid[T any] interface {
 	Get(r, c int) (T, bool)
-	AllCells(yield func(Cell[T]) bool)
+	AllCells(yield func(GridWalker[T]) bool)
+}
+
+type MutableGrid[T any] interface {
+	Grid[T]
+	Set(r, c int, v T) bool
 }
 
 type Coordinate struct {
@@ -23,116 +28,181 @@ func (c Coordinate) Column() int {
 	return c.column
 }
 
-type Cell[T any] struct {
+type Translation struct {
+	row    int
+	column int
+}
+
+func (t Translation) Row() int {
+	return t.row
+}
+
+func (t Translation) Column() int {
+	return t.column
+}
+
+func (t Translation) Negate() Translation {
+	return Translation{-t.row, -t.column}
+}
+
+func (t Translation) RotateRight() Translation {
+	return Translation{t.column, -t.row}
+}
+
+func (t Translation) RotateLeft() Translation {
+	return Translation{-t.column, t.row}
+}
+
+type GridWalker[T any] struct {
 	grid        Grid[T]
-	row, column int
+	position    Coordinate
+	orientation Translation
 }
 
-func CellAt[T any](g Grid[T], r, c int) Cell[T] {
-	return Cell[T]{g, r, c}
+func WalkGrid[T any](g Grid[T], position Coordinate, orientation Translation) GridWalker[T] {
+	return GridWalker[T]{g, position, orientation}
 }
 
-func (c Cell[T]) Coordinate() Coordinate {
-	return Coordinate{c.row, c.column}
+func (w GridWalker[T]) Grid() Grid[T] {
+	return w.grid
 }
 
-func (c Cell[T]) Row() int {
-	return c.row
+func (w GridWalker[T]) Position() Coordinate {
+	return w.position
 }
 
-func (c Cell[T]) Column() int {
-	return c.column
+func (w GridWalker[T]) Orientation() Translation {
+	return w.orientation
 }
 
-func (c Cell[T]) Get() T {
-	v, _ := c.grid.Get(c.row, c.column)
+func (w GridWalker[T]) Set(v T) bool {
+	if grid, isMutable := w.grid.(MutableGrid[T]); isMutable {
+		return grid.Set(w.position.row, w.position.column, v)
+	}
+	return false
+}
+
+func (w GridWalker[T]) Get() T {
+	v, _ := w.grid.Get(w.position.row, w.position.column)
 	return v
 }
 
-func (c Cell[T]) Valid() bool {
-	_, ok := c.grid.Get(c.row, c.column)
+func (w GridWalker[T]) Valid() bool {
+	_, ok := w.grid.Get(w.position.row, w.position.column)
 	return ok
 }
 
-func (c Cell[T]) Move(delta Coordinate) Cell[T] {
-	return Cell[T]{c.grid, c.row + delta.row, c.column + delta.column}
+func (w GridWalker[T]) MoveTo(position Coordinate) GridWalker[T] {
+	return GridWalker[T]{w.grid, position, w.orientation}
 }
 
-func (c Cell[T]) Up() Cell[T] {
-	return c.Move(Up)
+func (w GridWalker[T]) Move(translation Translation) GridWalker[T] {
+	return GridWalker[T]{w.grid, Coordinate{w.position.row + translation.row, w.position.column + translation.column}, w.orientation}
 }
 
-func (c Cell[T]) Down() Cell[T] {
-	return c.Move(Down)
+func (w GridWalker[T]) MoveN() GridWalker[T] {
+	return w.Move(North)
 }
 
-func (c Cell[T]) Left() Cell[T] {
-	return c.Move(Left)
+func (w GridWalker[T]) MoveS() GridWalker[T] {
+	return w.Move(South)
 }
 
-func (c Cell[T]) Right() Cell[T] {
-	return c.Move(Right)
+func (w GridWalker[T]) MoveW() GridWalker[T] {
+	return w.Move(West)
 }
 
-func (c Cell[T]) UpLeft() Cell[T] {
-	return c.Move(UpLeft)
+func (w GridWalker[T]) MoveE() GridWalker[T] {
+	return w.Move(East)
 }
 
-func (c Cell[T]) UpRight() Cell[T] {
-	return c.Move(UpRight)
+func (w GridWalker[T]) MoveNW() GridWalker[T] {
+	return w.Move(NorthWest)
 }
 
-func (c Cell[T]) DownLeft() Cell[T] {
-	return c.Move(DownLeft)
+func (w GridWalker[T]) MoveNE() GridWalker[T] {
+	return w.Move(NorthEast)
 }
 
-func (c Cell[T]) DownRight() Cell[T] {
-	return c.Move(DownRight)
+func (w GridWalker[T]) MoveSW() GridWalker[T] {
+	return w.Move(SouthWest)
 }
 
-func (c Cell[T]) MoveSeq(delta Coordinate) iter.Seq2[int, Cell[T]] {
-	return func(yield func(int, Cell[T]) bool) {
+func (w GridWalker[T]) MoveSE() GridWalker[T] {
+	return w.Move(SouthEast)
+}
+
+func (w GridWalker[T]) MoveForwards() GridWalker[T] {
+	return w.Move(w.orientation)
+}
+
+func (w GridWalker[T]) MoveBackwards() GridWalker[T] {
+	return w.Move(w.orientation.Negate())
+}
+
+func (w GridWalker[T]) MoveLeft() GridWalker[T] {
+	return w.Move(w.orientation.RotateLeft())
+}
+
+func (w GridWalker[T]) MoveRight() GridWalker[T] {
+	return w.Move(w.orientation.RotateRight())
+}
+
+func (w GridWalker[T]) OrientTowards(orientation Translation) GridWalker[T] {
+	return GridWalker[T]{w.grid, w.position, orientation}
+}
+
+func (w GridWalker[T]) RotateLeft() GridWalker[T] {
+	return GridWalker[T]{w.grid, w.position, w.orientation.RotateLeft()}
+}
+
+func (w GridWalker[T]) RotateRight() GridWalker[T] {
+	return GridWalker[T]{w.grid, w.position, w.orientation.RotateRight()}
+}
+
+func (w GridWalker[T]) MoveSeq(delta Translation) iter.Seq2[int, GridWalker[T]] {
+	return func(yield func(int, GridWalker[T]) bool) {
 		for i := 0; ; i++ {
-			if !c.Valid() || !yield(i, c) {
+			if !w.Valid() || !yield(i, w) {
 				return
 			}
-			c = c.Move(delta)
+			w = w.Move(delta)
 		}
 	}
 }
 
-func (c Cell[T]) MoveAll(deltas iter.Seq[Coordinate]) iter.Seq2[Coordinate, Cell[T]] {
-	return func(yield func(Coordinate, Cell[T]) bool) {
+func (w GridWalker[T]) MoveAll(deltas iter.Seq[Translation]) iter.Seq2[Translation, GridWalker[T]] {
+	return func(yield func(Translation, GridWalker[T]) bool) {
 		for delta := range deltas {
-			if cell2 := c.Move(delta); cell2.Valid() && !yield(delta, cell2) {
+			if cell2 := w.Move(delta); cell2.Valid() && !yield(delta, cell2) {
 				return
 			}
 		}
 	}
 }
 
-func (cell Cell[T]) AllNeighbors(yield func(Coordinate, Cell[T]) bool) {
-	cell.MoveAll(AllNeighbors)(yield)
+func (w GridWalker[T]) AllNeighbors(yield func(Translation, GridWalker[T]) bool) {
+	w.MoveAll(AllNeighbors)(yield)
 }
 
-func (cell Cell[T]) OrthogonalNeighbors(yield func(Coordinate, Cell[T]) bool) {
-	cell.MoveAll(OrthogonalNeighbors)(yield)
+func (w GridWalker[T]) OrthogonalNeighbors(yield func(Translation, GridWalker[T]) bool) {
+	w.MoveAll(OrthogonalNeighbors)(yield)
 }
 
-func (cell Cell[T]) DiagonalNeighbors(yield func(Coordinate, Cell[T]) bool) {
-	cell.MoveAll(DiagonalNeighbors)(yield)
+func (w GridWalker[T]) DiagonalNeighbors(yield func(Translation, GridWalker[T]) bool) {
+	w.MoveAll(DiagonalNeighbors)(yield)
 }
 
 var (
-	Up                  = Coordinate{-1, 0}
-	Down                = Coordinate{1, 0}
-	Left                = Coordinate{0, -1}
-	Right               = Coordinate{0, 1}
-	UpLeft              = Coordinate{-1, -1}
-	UpRight             = Coordinate{-1, 1}
-	DownLeft            = Coordinate{1, -1}
-	DownRight           = Coordinate{1, 1}
-	AllNeighbors        = slices.Values([]Coordinate{Up, Down, Left, Right, UpLeft, UpRight, DownLeft, DownRight})
-	OrthogonalNeighbors = slices.Values([]Coordinate{Up, Down, Left, Right})
-	DiagonalNeighbors   = slices.Values([]Coordinate{UpLeft, UpRight, DownLeft, DownRight})
+	North               = Translation{-1, 0}
+	South               = Translation{1, 0}
+	West                = Translation{0, -1}
+	East                = Translation{0, 1}
+	NorthWest           = Translation{-1, -1}
+	NorthEast           = Translation{-1, 1}
+	SouthWest           = Translation{1, -1}
+	SouthEast           = Translation{1, 1}
+	AllNeighbors        = slices.Values([]Translation{North, South, West, East, NorthWest, NorthEast, SouthWest, SouthEast})
+	OrthogonalNeighbors = slices.Values([]Translation{North, South, West, East})
+	DiagonalNeighbors   = slices.Values([]Translation{NorthWest, NorthEast, SouthWest, SouthEast})
 )

@@ -33,7 +33,7 @@ func partA(grid util.Grid[byte]) int {
 func partB(grid util.Grid[byte]) int {
 	var tally int
 	for c := range util.MapGridWithMap(grid, map[byte]int{'M': 1, 'A': 2, 'S': 4}).AllCells {
-		if c.Get() == 2 && (c.UpLeft().Get()|c.DownRight().Get())&(c.UpRight().Get()|c.DownLeft().Get()) == 5 {
+		if c.Get() == 2 && (c.MoveNW().Get()|c.MoveSE().Get())&(c.MoveNE().Get()|c.MoveSW().Get()) == 5 {
 			tally++
 		}
 	}
