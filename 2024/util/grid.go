@@ -28,6 +28,14 @@ func (c Coordinate) Column() int {
 	return c.column
 }
 
+func (c Coordinate) Add(t Translation) Coordinate {
+	return Coordinate{c.row + t.row, c.column + t.column}
+}
+
+func (c Coordinate) DistanceTo(c2 Coordinate) Translation {
+	return Translation{c2.row - c.row, c2.column - c.column}
+}
+
 type Translation struct {
 	row    int
 	column int
@@ -42,7 +50,7 @@ func (t Translation) Column() int {
 }
 
 func (t Translation) Negate() Translation {
-	return Translation{-t.row, -t.column}
+	return t.Factor(-1)
 }
 
 func (t Translation) RotateRight() Translation {
@@ -51,6 +59,10 @@ func (t Translation) RotateRight() Translation {
 
 func (t Translation) RotateLeft() Translation {
 	return Translation{-t.column, t.row}
+}
+
+func (t Translation) Factor(n int) Translation {
+	return Translation{n * t.row, n * t.column}
 }
 
 type GridWalker[T any] struct {
@@ -152,6 +164,10 @@ func (w GridWalker[T]) OrientTowards(orientation Translation) GridWalker[T] {
 	return GridWalker[T]{w.grid, w.position, orientation}
 }
 
+func (w GridWalker[T]) TurnAround() GridWalker[T] {
+	return GridWalker[T]{w.grid, w.position, w.orientation.Negate()}
+}
+
 func (w GridWalker[T]) RotateLeft() GridWalker[T] {
 	return GridWalker[T]{w.grid, w.position, w.orientation.RotateLeft()}
 }
@@ -160,14 +176,12 @@ func (w GridWalker[T]) RotateRight() GridWalker[T] {
 	return GridWalker[T]{w.grid, w.position, w.orientation.RotateRight()}
 }
 
-func (w GridWalker[T]) MoveSeq(delta Translation) iter.Seq2[int, GridWalker[T]] {
-	return func(yield func(int, GridWalker[T]) bool) {
-		for i := 0; ; i++ {
-			if !w.Valid() || !yield(i, w) {
-				return
-			}
-			w = w.Move(delta)
+func (w GridWalker[T]) MoveSeq(yield func(int, GridWalker[T]) bool) {
+	for i := 0; ; i++ {
+		if !w.Valid() || !yield(i, w) {
+			return
 		}
+		w = w.Move(w.orientation)
 	}
 }
 

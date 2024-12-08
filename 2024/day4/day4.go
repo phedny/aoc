@@ -16,7 +16,8 @@ func partA(grid util.Grid[byte]) int {
 	for c := range grid.AllCells {
 		if c.Get() == 'X' {
 			for delta := range c.AllNeighbors {
-				for i, c := range c.MoveSeq(delta) {
+				c = c.OrientTowards(delta)
+				for i, c := range c.MoveSeq {
 					if c.Get() != "XMAS"[i] {
 						break
 					} else if i == 3 {
