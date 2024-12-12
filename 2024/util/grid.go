@@ -10,9 +10,12 @@ type Grid[T any] interface {
 	AllCells(yield func(GridWalker[T]) bool)
 }
 
-type MutableGrid[T any] interface {
-	Grid[T]
+type SettableGrid[T any] interface {
 	Set(r, c int, v T) bool
+}
+
+type UnsettableGrid[T any] interface {
+	Unset(r, c int)
 }
 
 type Coordinate struct {
@@ -88,10 +91,16 @@ func (w GridWalker[T]) Orientation() Translation {
 }
 
 func (w GridWalker[T]) Set(v T) bool {
-	if grid, isMutable := w.grid.(MutableGrid[T]); isMutable {
+	if grid, isSettable := w.grid.(SettableGrid[T]); isSettable {
 		return grid.Set(w.position.row, w.position.column, v)
 	}
 	return false
+}
+
+func (w GridWalker[T]) Unset() {
+	if grid, isUnsettable := w.grid.(UnsettableGrid[T]); isUnsettable {
+		grid.Unset(w.position.row, w.position.column)
+	}
 }
 
 func (w GridWalker[T]) Get() T {
