@@ -23,6 +23,10 @@ type Coordinate struct {
 	column int
 }
 
+func NewCoordinate(row, column int) Coordinate {
+	return Coordinate{row, column}
+}
+
 func (c Coordinate) Row() int {
 	return c.row
 }
