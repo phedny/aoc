@@ -60,7 +60,7 @@ func main() {
 			delete(nodes, node.pos)
 		}
 	}
-	reachable := map[Destination]*Path{{node: start, orientation: util.East}: &Path{cost: 0, extends: nil, visits: map[util.Coordinate]bool{start.pos: true}}}
+	reachable := map[Destination]*Path{{node: start, orientation: util.East}: {cost: 0, extends: nil, visits: map[util.Coordinate]bool{start.pos: true}}}
 	front := map[Destination]bool{{node: start, orientation: util.East}: true}
 	for len(front) > 0 {
 		newFront := make(map[Destination]bool)
