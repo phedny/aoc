@@ -220,6 +220,53 @@ func (w GridWalker[T]) DiagonalNeighbors(yield func(Translation, GridWalker[T]) 
 	w.MoveAll(DiagonalNeighbors)(yield)
 }
 
+func (w GridWalker[T]) AllCellsInRange(n int) iter.Seq2[Translation, GridWalker[T]] {
+	return func(yield func(Translation, GridWalker[T]) bool) {
+		for t := range AllTranslationsInRange(n) {
+			w := w.Move(t)
+			if w.Valid() && !yield(t, w) {
+				break
+			}
+		}
+	}
+}
+
+func AllTranslationsInRange(n int) iter.Seq[Translation] {
+	return func(yield func(Translation) bool) {
+		if !yield(Translation{0, 0}) {
+			return
+		}
+		for r := range n {
+			if !yield(Translation{-r - 1, 0}) {
+				return
+			}
+			if !yield(Translation{r + 1, 0}) {
+				return
+			}
+			if !yield(Translation{0, -r - 1}) {
+				return
+			}
+			if !yield(Translation{0, r + 1}) {
+				return
+			}
+			for c := range n - r - 1 {
+				if !yield(Translation{-r - 1, -c - 1}) {
+					return
+				}
+				if !yield(Translation{-r - 1, c + 1}) {
+					return
+				}
+				if !yield(Translation{r + 1, -c - 1}) {
+					return
+				}
+				if !yield(Translation{r + 1, c + 1}) {
+					return
+				}
+			}
+		}
+	}
+}
+
 var (
 	North               = Translation{-1, 0}
 	South               = Translation{1, 0}
