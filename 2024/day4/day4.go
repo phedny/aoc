@@ -1,12 +1,13 @@
 package main
 
 import (
+	"aoc2024/input"
 	"aoc2024/util"
 	"fmt"
 )
 
 func main() {
-	grid := util.ReadLines()
+	grid := input.ReadDay4()
 	fmt.Println(partA(grid))
 	fmt.Println(partB(grid))
 }

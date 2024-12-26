@@ -1,13 +1,14 @@
 package main
 
 import (
+	"aoc2024/input"
 	"aoc2024/util"
 	"fmt"
 )
 
 func main() {
 	grid := make(util.MapGrid[byte])
-	for w := range util.ReadByteMatrix().AllCells {
+	for w := range input.ReadDay12().AllCells {
 		grid.Set(w.Position().Row(), w.Position().Column(), w.Get())
 	}
 	var tallyA, tallyB int

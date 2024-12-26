@@ -1,36 +1,29 @@
 package main
 
 import (
-	"aoc2024/util"
+	"aoc2024/input"
 	"fmt"
 	"strconv"
-	"strings"
 )
 
 func main() {
-	var tallyA, tallyB uint64
-	for _, line := range util.ReadLines() {
-		strs := strings.Split(line, " ")
-		target, _ := strconv.ParseUint(strs[0][:len(strs[0])-1], 10, 64)
-		ns := make([]uint64, len(strs)-1)
-		for i, str := range strs[1:] {
-			ns[i], _ = strconv.ParseUint(str, 10, 64)
+	var tallyA, tallyB int
+	for _, line := range input.ReadDay7() {
+		if run(line.Target, line.Values, sum, product) {
+			tallyA += line.Target
 		}
-		if run(target, ns, sum, product) {
-			tallyA += target
-		}
-		if run(target, ns, sum, product, concat) {
-			tallyB += target
+		if run(line.Target, line.Values, sum, product, concat) {
+			tallyB += line.Target
 		}
 	}
 	fmt.Println(tallyA)
 	fmt.Println(tallyB)
 }
 
-func run(target uint64, ns []uint64, ops ...func(a, b uint64) uint64) bool {
-	carries := map[uint64]bool{ns[0]: true}
+func run(target int, ns []int, ops ...func(a, b int) int) bool {
+	carries := map[int]bool{ns[0]: true}
 	for _, n := range ns[1:] {
-		newCarries := make(map[uint64]bool)
+		newCarries := make(map[int]bool)
 		for carry := range carries {
 			for _, op := range ops {
 				newCarry := op(carry, n)
@@ -44,15 +37,15 @@ func run(target uint64, ns []uint64, ops ...func(a, b uint64) uint64) bool {
 	return carries[target]
 }
 
-func sum(a, b uint64) uint64 {
+func sum(a, b int) int {
 	return a + b
 }
 
-func product(a, b uint64) uint64 {
+func product(a, b int) int {
 	return a * b
 }
 
-func concat(a, b uint64) uint64 {
-	n, _ := strconv.ParseUint(strconv.FormatUint(a, 10)+strconv.FormatUint(b, 10), 10, 64)
+func concat(a, b int) int {
+	n, _ := strconv.Atoi(strconv.Itoa(a) + strconv.Itoa(b))
 	return n
 }

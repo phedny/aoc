@@ -1,14 +1,14 @@
 package main
 
 import (
-	"aoc2024/util"
+	"aoc2024/input"
 	"fmt"
 	"strconv"
 )
 
 func main() {
 	var tallyA, tallyB int
-	for _, code := range util.ReadLines() {
+	for _, code := range input.ReadDay21() {
 		n, _ := strconv.Atoi(code[:len(code)-1])
 		m := map[string]int{code: 1}
 		for range 3 {

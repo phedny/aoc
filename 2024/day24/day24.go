@@ -1,7 +1,7 @@
 package main
 
 import (
-	"aoc2024/util"
+	"aoc2024/input"
 	"fmt"
 	"maps"
 	"slices"
@@ -9,15 +9,10 @@ import (
 )
 
 func main() {
-	lines := util.ReadLines()
-
-	i := slices.Index(lines, "")
-	faults := make(map[string]bool)
-	wires, mux := parseNetwork(lines[i+1:])
-
-	for _, line := range lines[:i] {
-		s := strings.SplitN(line, " ", 2)
-		wires.Get(s[0][:len(s[0])-1]).SetBit(s[1] == "1")
+	input := input.ReadDay24()
+	wires, mux := parseNetwork(input.Gates)
+	for wire, state := range input.Wires {
+		wires.Get(wire).SetBit(state)
 	}
 	fmt.Println(mux.Get())
 
@@ -26,6 +21,7 @@ func main() {
 		panic("first bit wrong")
 	}
 
+	faults := make(map[string]bool)
 	for i := 1; ; i++ {
 		x := wires[fmt.Sprintf("x%02d", i)]
 		y := wires[fmt.Sprintf("y%02d", i)]
@@ -51,12 +47,11 @@ func main() {
 	fmt.Println(strings.Join(s, ","))
 }
 
-func parseNetwork(lines []string) (Wires, *Mux) {
+func parseNetwork(lines []input.Day24Gate) (Wires, *Mux) {
 	wires := make(Wires)
 	for _, line := range lines {
-		s := strings.SplitN(line, " ", 5)
 		var gate BitGate
-		switch s[1] {
+		switch line.Operator {
 		case "AND":
 			gate = &And{InputBitWires: InputBitWires{in: make(map[int]*Wire), bits: make(map[int]bool)}, OutputBitWires: OutputBitWires{out: make(map[string]*Wire)}}
 		case "OR":
@@ -64,9 +59,9 @@ func parseNetwork(lines []string) (Wires, *Mux) {
 		case "XOR":
 			gate = &Xor{InputBitWires: InputBitWires{in: make(map[int]*Wire), bits: make(map[int]bool)}, OutputBitWires: OutputBitWires{out: make(map[string]*Wire)}}
 		}
-		wires.Get(s[0]).ConnectToGateInput(gate, 0)
-		wires.Get(s[2]).ConnectToGateInput(gate, 1)
-		wires.Get(s[4]).ConnectToGateOutput(gate, "out")
+		wires.Get(line.A).ConnectToGateInput(gate, 0)
+		wires.Get(line.B).ConnectToGateInput(gate, 1)
+		wires.Get(line.Out).ConnectToGateOutput(gate, "out")
 	}
 
 	mux := &Mux{InputBitWires{in: make(map[int]*Wire), bits: make(map[int]bool)}}

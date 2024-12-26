@@ -1,13 +1,14 @@
 package main
 
 import (
+	"aoc2024/input"
 	"aoc2024/util"
 	"fmt"
 )
 
 func main() {
 	var w util.GridWalker[byte]
-	for w = range util.ReadByteMatrix().AllCells {
+	for w = range input.ReadDay20().AllCells {
 		if w.Get() == 'S' {
 			break
 		}

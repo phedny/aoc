@@ -1,15 +1,14 @@
 package main
 
 import (
-	"aoc2024/util"
+	"aoc2024/input"
 	"fmt"
 	"strconv"
-	"strings"
 )
 
 func main() {
 	m := make(map[string]int)
-	for _, s := range strings.Split(util.ReadLines()[0], " ") {
+	for _, s := range input.ReadDay11() {
 		m[s]++
 	}
 	m, partA := stepsAndTally(m, 25)

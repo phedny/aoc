@@ -1,18 +1,18 @@
 package main
 
 import (
-	"aoc2024/util"
+	"aoc2024/input"
 	"fmt"
 
 	"github.com/tidwall/btree"
 )
 
 func main() {
-	disk := NewDisk(util.ReadFile())
+	disk := NewDisk(input.ReadDay9())
 	partA(disk)
 	fmt.Println(disk.Checksum())
 
-	disk = NewDisk(util.ReadFile())
+	disk = NewDisk(input.ReadDay9())
 	partB(disk)
 	fmt.Println(disk.Checksum())
 }
@@ -67,11 +67,10 @@ type Disk struct {
 	files btree.Map[int, File]
 }
 
-func NewDisk(spec []byte) *Disk {
+func NewDisk(spec []int) *Disk {
 	var disk Disk
 	pos, id, free := 0, 0, false
-	for _, v := range spec {
-		length := int(v - '0')
+	for _, length := range spec {
 		if free {
 			disk.SetGap(pos, length)
 		} else {

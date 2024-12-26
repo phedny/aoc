@@ -1,12 +1,13 @@
 package main
 
 import (
+	"aoc2024/input"
 	"aoc2024/util"
 	"fmt"
 )
 
 func main() {
-	grid := util.ReadByteMatrix()
+	grid := input.ReadDay8()
 	m := make(map[byte][]util.Coordinate)
 	for w := range grid.AllCells {
 		if b := w.Get(); b != '.' {

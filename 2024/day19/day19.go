@@ -1,15 +1,14 @@
 package main
 
 import (
-	"aoc2024/util"
+	"aoc2024/input"
 	"fmt"
-	"strings"
 )
 
 func main() {
-	lines := util.ReadLines()
+	input := input.ReadDay19()
 	start := &Node{next: make(map[byte][]*Node), final: true}
-	for _, m := range strings.Split(lines[0], ", ") {
+	for _, m := range input.Towels {
 		n := start
 	LineLoop:
 		for _, r := range m[:len(m)-1] {
@@ -34,7 +33,7 @@ func main() {
 	}
 
 	var tallyA, tallyB int
-	for _, line := range lines[2:] {
+	for _, line := range input.Designs {
 		nodes := map[*Node]int{start: 1}
 		for _, r := range line {
 			newNodes := make(map[*Node]int)

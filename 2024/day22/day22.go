@@ -1,16 +1,14 @@
 package main
 
 import (
-	"aoc2024/util"
+	"aoc2024/input"
 	"fmt"
-	"strconv"
 )
 
 func main() {
 	var tally int
 	totalGains := make(map[[4]int]int)
-	for _, line := range util.ReadLines() {
-		n, _ := strconv.Atoi(line)
+	for _, n := range input.ReadDay22() {
 		var seq [4]int
 		for i := range 3 {
 			nextN := next(n)

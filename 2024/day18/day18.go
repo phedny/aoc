@@ -1,6 +1,7 @@
 package main
 
 import (
+	"aoc2024/input"
 	"aoc2024/util"
 	"fmt"
 	"maps"
@@ -17,21 +18,17 @@ func main() {
 			validCells[util.NewCoordinate(r, c)] = math.MaxInt
 		}
 	}
-	for _, line := range util.ReadLines()[:corruption] {
-		var r, c int
-		fmt.Sscanf(line, "%d,%d", &r, &c)
-		delete(validCells, util.NewCoordinate(r, c))
+	for _, line := range input.ReadDay18()[:corruption] {
+		delete(validCells, util.NewCoordinate(line.V1, line.V2))
 	}
 	cost, _ := util.AStar(Path{util.NewCoordinate(0, 0), 0}, pathCost, step(maps.Clone(validCells)))
 	fmt.Println(cost)
 
-	for _, line := range util.ReadLines()[corruption:] {
-		var r, c int
-		fmt.Sscanf(line, "%d,%d", &r, &c)
-		delete(validCells, util.NewCoordinate(r, c))
+	for _, line := range input.ReadDay18()[corruption:] {
+		delete(validCells, util.NewCoordinate(line.V1, line.V2))
 		_, found := util.AStar(Path{util.NewCoordinate(0, 0), 0}, pathCost, step(maps.Clone(validCells)))
 		if !found {
-			fmt.Printf("%d,%d\n", r, c)
+			fmt.Printf("%d,%d\n", line.V1, line.V2)
 			return
 		}
 	}

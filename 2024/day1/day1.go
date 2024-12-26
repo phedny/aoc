@@ -1,18 +1,16 @@
 package main
 
 import (
-	"aoc2024/util"
+	"aoc2024/input"
 	"fmt"
 	"slices"
 )
 
 func main() {
 	var as, bs []int
-	for _, line := range util.ReadLines() {
-		var a, b int
-		fmt.Sscan(line, &a, &b)
-		as = append(as, a)
-		bs = append(bs, b)
+	for _, line := range input.ReadDay1() {
+		as = append(as, line.V1)
+		bs = append(bs, line.V2)
 	}
 
 	fmt.Println(partA(as, bs))

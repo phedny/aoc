@@ -1,21 +1,16 @@
 package main
 
 import (
-	"aoc2024/util"
+	"aoc2024/input"
 	"fmt"
 	"slices"
-	"strconv"
-	"strings"
 )
 
 func main() {
-	lines := util.ReadLines()
-	cutAt := slices.Index(lines, "")
+	input := input.ReadDay5()
 	order := make(map[[2]int]bool)
-	for _, line := range lines[:cutAt] {
-		var a, b int
-		fmt.Sscanf(line, "%d|%d", &a, &b)
-		order[[2]int{a, b}] = true
+	for _, input := range input.Order {
+		order[[2]int{input.V1, input.V2}] = true
 	}
 	cmp := func(a, b int) int {
 		if order[[2]int{a, b}] {
@@ -27,13 +22,7 @@ func main() {
 		}
 	}
 	var tallyA, tallyB int
-	for _, line := range lines[cutAt+1:] {
-		ss := strings.Split(line, ",")
-		ns := make([]int, len(ss))
-		for i, s := range ss {
-			n, _ := strconv.Atoi(s)
-			ns[i] = n
-		}
+	for _, ns := range input.Productions {
 		if slices.IsSortedFunc(ns, cmp) {
 			tallyA += ns[(len(ns)-1)/2]
 		} else {

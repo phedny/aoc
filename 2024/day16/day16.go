@@ -1,6 +1,7 @@
 package main
 
 import (
+	"aoc2024/input"
 	"aoc2024/util"
 	"fmt"
 	"maps"
@@ -10,7 +11,7 @@ import (
 func main() {
 	var start, end *Node
 	nodes := make(map[util.Coordinate]*Node)
-	for w := range util.ReadByteMatrix().AllCells {
+	for w := range input.ReadDay16().AllCells {
 		if b := w.Get(); b != '#' {
 			node := &Node{w.Position(), make(map[util.Translation]Edge)}
 			nodes[w.Position()] = node

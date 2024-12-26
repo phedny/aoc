@@ -1,7 +1,7 @@
 package main
 
 import (
-	"aoc2024/util"
+	"aoc2024/input"
 	"fmt"
 	"regexp"
 	"strconv"
@@ -10,7 +10,7 @@ import (
 var rMul = regexp.MustCompile(`(?:mul\((\d{1,3}),(\d{1,3})\))|(do\(\))|(don't\(\))`)
 
 func main() {
-	f := util.ReadFile()
+	f := input.ReadDay3()
 	ms := rMul.FindAllStringSubmatch(string(f), len(f))
 	var tally int
 	enabled := true

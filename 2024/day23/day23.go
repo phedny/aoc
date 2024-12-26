@@ -1,7 +1,7 @@
 package main
 
 import (
-	"aoc2024/util"
+	"aoc2024/input"
 	"fmt"
 	"iter"
 	"slices"
@@ -10,8 +10,8 @@ import (
 
 func main() {
 	g := make(Graph)
-	for _, link := range util.ReadLines() {
-		g.Connect(link[0:2], link[3:5])
+	for _, link := range input.ReadDay23() {
+		g.Connect(link.V1, link.V2)
 	}
 
 	fmt.Println(partA(g))

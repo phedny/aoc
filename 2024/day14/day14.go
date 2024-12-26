@@ -1,17 +1,12 @@
 package main
 
 import (
-	"aoc2024/util"
+	"aoc2024/input"
 	"fmt"
 )
 
 func main() {
-	var robots []Robot
-	for _, line := range util.ReadLines() {
-		var robot Robot
-		fmt.Sscanf(line, "p=%d,%d v=%d,%d", &robot.pX, &robot.pY, &robot.vX, &robot.vY)
-		robots = append(robots, robot)
-	}
+	robots := input.ReadDay14()
 
 	// fmt.Println(partA(robots, 11, 7))
 	fmt.Println(partA(robots, 101, 103))
@@ -25,11 +20,11 @@ func main() {
 	printFrame(robots, 101, 103, 7093)
 }
 
-func partA(robots []Robot, mX, mY int) int {
+func partA(robots []input.Day14, mX, mY int) int {
 	var tallies [4]int
 	for _, robot := range robots {
-		pX := (robot.pX + 100*(robot.vX+mX)) % mX
-		pY := (robot.pY + 100*(robot.vY+mY)) % mY
+		pX := (robot.PositionX + 100*(robot.VelocityX+mX)) % mX
+		pY := (robot.PositionY + 100*(robot.VelocityY+mY)) % mY
 		if pX != mX/2 && pY != mY/2 {
 			var q int
 			if pX > mX/2 {
@@ -53,11 +48,11 @@ func partA(robots []Robot, mX, mY int) int {
 // 	}
 // }
 
-func printFrame(robots []Robot, mX, mY, frame int) {
+func printFrame(robots []input.Day14, mX, mY, frame int) {
 	cs := make(map[[2]int]bool)
 	for _, robot := range robots {
-		x := (robot.pX + frame*(robot.vX+mX)) % mX
-		y := (robot.pY + frame*(robot.vY+mY)) % mY
+		x := (robot.PositionX + frame*(robot.VelocityX+mX)) % mX
+		y := (robot.PositionY + frame*(robot.VelocityY+mY)) % mY
 		cs[[2]int{y, x}] = true
 	}
 	for y := range mY {
@@ -70,8 +65,4 @@ func printFrame(robots []Robot, mX, mY, frame int) {
 		}
 		fmt.Println()
 	}
-}
-
-type Robot struct {
-	pX, pY, vX, vY int
 }

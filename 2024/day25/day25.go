@@ -1,17 +1,12 @@
 package main
 
 import (
-	"aoc2024/util"
-	"bytes"
+	"aoc2024/input"
 	"fmt"
 )
 
 func main() {
-	blocks := bytes.Split(util.ReadFile(), []byte("\n\n"))
-	grids := make([]util.ByteMatrix, len(blocks))
-	for i, block := range blocks {
-		grids[i] = util.ByteMatrix(bytes.Split(block, []byte("\n")))
-	}
+	grids := input.ReadDay25()
 	var tally int
 	for i, grid1 := range grids {
 	GridLoop:

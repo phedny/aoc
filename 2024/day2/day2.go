@@ -1,21 +1,14 @@
 package main
 
 import (
-	"aoc2024/util"
+	"aoc2024/input"
 	"fmt"
 	"slices"
-	"strconv"
-	"strings"
 )
 
 func main() {
 	var safe0, safe1 int
-	for _, line := range util.ReadLines() {
-		var r []int
-		for _, number := range strings.Split(line, " ") {
-			n, _ := strconv.Atoi(number)
-			r = append(r, n)
-		}
+	for _, r := range input.ReadDay2() {
 		if PartA(r, safeUp) || PartA(r, safeDown) {
 			safe0++
 		} else if PartB(r, safeUp) || PartB(r, safeDown) {

@@ -1,18 +1,16 @@
 package main
 
 import (
+	"aoc2024/input"
 	"aoc2024/util"
-	"bytes"
 	"fmt"
 )
 
 func main() {
-	fileParts := bytes.SplitN(util.ReadFile(), []byte("\n\n"), 2)
-	grid := util.ByteMatrix(bytes.Split(fileParts[0], []byte("\n")))
-
+	input := input.ReadDay15()
 	for _, setup := range []func(util.Grid[byte]) util.GridWalker[Box]{partA, partB} {
-		robot := setup(grid)
-		for _, instr := range fileParts[1] {
+		robot := setup(input.Grid)
+		for _, instr := range input.Instructions {
 			robot = robot.OrientTowards(orientations[instr])
 			if robot.Orientation() == (util.Translation{}) {
 				continue

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"aoc2024/input"
 	"aoc2024/util"
 	"fmt"
 	"iter"
@@ -8,7 +9,7 @@ import (
 )
 
 func main() {
-	grid := util.ReadByteMatrix()
+	grid := input.ReadDay10()
 
 	fmt.Println(run(grid,
 		func(c util.Coordinate) map[util.Coordinate]bool { return map[util.Coordinate]bool{c: true} },
