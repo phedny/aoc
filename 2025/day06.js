@@ -1,6 +1,6 @@
-const lines = require('fs')
-  .readFileSync('./day06.in', { encoding: 'utf-8' })
-  .split('\n');
+import { getInput } from 'aocparse';
+
+const lines = getInput('./day06.in', 'L');
 
 const [lastLine] = lines.splice(lines.length - 1);
 const operators = lastLine.trim().split(/ +/);

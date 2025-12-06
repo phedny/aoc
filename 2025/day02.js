@@ -1,7 +1,6 @@
-const testableIds = require('fs')
-  .readFileSync('./day02.in', { encoding: 'utf-8' })
-  .split(',')
-  .map((range) => range.split('-').map((n) => parseInt(n)))
+import { getInput } from 'aocparse';
+
+const testableIds = getInput('./day02.in', 'S,S-I')
   .flatMap(([low, high]) => Array(high - low + 1).fill().map((_, n) => low + n))
   .map((n) => [String(n), n]);
 

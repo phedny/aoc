@@ -1,7 +1,6 @@
-const rolls = require('fs')
-  .readFileSync('./day04.in', { encoding: 'utf-8' })
-  .split('\n')
-  .map((line) => line.split('').map((c) => c === '@'));
+import { getInput } from 'aocparse';
+
+const rolls = getInput('./day04.in', 'LC=@');
 
 function neighbors8(x, y) {
   return [

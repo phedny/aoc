@@ -1,6 +1,6 @@
-const banks = require('fs')
-  .readFileSync('./day03.in', { encoding: 'utf-8' })
-  .split('\n');
+import { getInput } from 'aocparse';
+
+const banks = getInput('./day03.in', 'L');
 
 const sumA = banks
   .map((bank) => parseInt(highestJoltage(bank, 2)))

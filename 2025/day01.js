@@ -1,6 +1,6 @@
-const [countA, countB] = require('fs')
-  .readFileSync('./day01.in', { encoding: 'utf-8' })
-  .split('\n')
+import { getInput } from 'aocparse';
+
+const [countA, countB] = getInput('./day01.in', 'L')
   .flatMap((line) => Array(parseInt(line.substring(1))).fill(line[0]).concat(['A']))
   .reduce(
     ([countA, countB, pos], step) => {
