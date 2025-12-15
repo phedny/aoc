@@ -1,6 +1,7 @@
 {
   "type": "module",
   "dependencies": {
-    "aocparse": "file:./aocparse"
+    "aocparse": "file:./aocparse",
+    "fraction.js": "^5.3.4"
   }
 }
